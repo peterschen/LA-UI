@@ -1,0 +1,35 @@
+﻿@using laui.Models
+@model SeedModel
+
+<div class="row">
+    <div class="col-lg-12">
+        <form asp-controller="Seed" asp-action="Seed" class="form-horizontal">
+            <div class="form-group form-group-lg">
+                <label asp-for="TotalTransactions" class="col-lg-3 control-label"></label>
+                <div class="col-lg-6">
+                    <input asp-for="TotalTransactions" class="form-control" />
+                    <span asp-validation-for="TotalTransactions" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group form-group-lg">
+                <label asp-for="BadTransactions" class="col-lg-3 control-label"></label>
+                <div class="col-lg-6">
+                    <input asp-for="BadTransactions" class="form-control" />
+                    <span asp-validation-for="BadTransactions" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group form-group-lg">
+                <label asp-for="VehicleId" class="col-lg-3 control-label"></label>
+                <div class="col-lg-6">
+                    <input asp-for="VehicleId" class="form-control" />
+                    <span asp-validation-for="VehicleId" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-9">
+                    <button type="submit" class="btn btn-primary btn-block">Seed workspace</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

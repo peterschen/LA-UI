@@ -1,0 +1,37 @@
+﻿@using laui.Models
+@model SeedModel
+@{
+    ViewData["Title"] = "Seed Workspace";
+}
+
+<div class="row">
+    <div class="col-md-9">
+        <h2>Seed Workspace</h2>
+        <p>
+            Before you can use the search and explore the use cases provided by this applications you need to create records within Log Analytics.
+            By selecting <strong>Seed workspace</strong> below records will be automatically created by using the HTTP Data Collector API.
+        </p>
+    </div>
+</div>
+@if(Model.IsSeeded)
+{
+    <div class="row">
+        <div class="col-sm-9">
+            @if(Model.IsSuccess)
+            {
+                <div class="bs-callout bs-callout-success">
+                    <h4>Seeding succeeded</h4>
+                </div>
+            }
+            else
+            {
+                <div class="bs-callout bs-callout-danger">
+                    <h4>Seeding failed</h4>
+                </div>
+            }
+        </div>
+    </div>
+}
+@{
+    await Html.RenderPartialAsync("Form", Model);
+}
