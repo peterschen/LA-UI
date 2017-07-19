@@ -32,7 +32,7 @@ namespace laui.Controllers
             // Test Log Search API
             var searcher = new LogSearcher(_settings.TenantId, _settings.ApplicationId, _settings.ApplicationKey, 
                 _settings.SubscriptionId, _settings.ResourceGroup, _settings.WorkspaceName);
-            var searcherConfigurationValid = searcher.ReadTestData();
+            var searcherConfigurationValid = searcher.SearchTestRecords();
             
             model.IsValid = collectorConfigurationValid && searcherConfigurationValid;
             return View("Index", model);

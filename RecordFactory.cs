@@ -9,7 +9,13 @@ namespace laui
     {
         private static readonly Random _random = new Random();
         
-        public static string GenerateTraceRecords(string vehicleId, int totalTransactions = 20, int badTransactions = 0, string[] hops = null)
+        public static string GenerateTraceRecordString(string vehicleId, int totalTransactions = 20, int badTransactions = 0, string[] hops = null)
+        {
+            var records = GenerateTraceRecords(vehicleId, totalTransactions, badTransactions, hops);
+            return JsonConvert.SerializeObject(records);
+        }
+
+        public static List<TraceRecord> GenerateTraceRecords(string vehicleId, int totalTransactions = 20, int badTransactions = 0, string[] hops = null)
         {
             int badTransactionStep = -1;
             if(badTransactions > 0)
@@ -22,7 +28,7 @@ namespace laui
                 hops = new string[] { "Vehicle", "IoT Hub", "Event Hub (Location)", "Service Fabric (Business Logic)", "Service Fabric (Vehicle Actor)" };
             }
 
-            List<Record> records = new List<Record>();
+            List<TraceRecord> records = new List<TraceRecord>();
 
             for(var i = 1; i <= totalTransactions; i++)
             {
@@ -55,7 +61,7 @@ namespace laui
                 }
             }
 
-            return JsonConvert.SerializeObject(records);
+            return records;
         }
     }
 }

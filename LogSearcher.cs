@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using laui.Models;
 
 namespace laui
 {
@@ -33,7 +34,7 @@ namespace laui
             _workspaceName = workspaceName;
         }
 
-        public bool ReadTestData()
+        public bool SearchTestRecords()
         {
             string result = null;
             try
@@ -55,7 +56,7 @@ namespace laui
             return false;
         }
 
-        public async Task<bool> ReadTestDataAsync()
+        public async Task<bool> SearchTestRecordsAsync()
         {
             var result = await Search("*");
             if(result != null)
@@ -66,7 +67,44 @@ namespace laui
             return false;
         }
 
-        public async Task<string> Search(string query, DateTime? start = null, DateTime? end = null)
+        public List<Transaction> SearchTransactions(string transactionId, string vehicleId)
+        {
+            var records = SearchTraceRecords(transactionId, vehicleId);
+            return Transaction.Parse(records);
+        }
+        
+        public List<TraceRecord> SearchTraceRecords(string transactionId, string vehicleId)
+        {
+            if(string.IsNullOrEmpty(transactionId) && string.IsNullOrEmpty(vehicleId))
+            {
+                return new List<TraceRecord>();
+            }
+
+            /*
+                var query = "LauiTrace_CL";
+                query += "| where Timestamp_t > ago(3d)";
+                if(!string.IsNullOrEmpty(transactionId))
+                {
+                    query += string.Format("| where TransactionId_g == '{0}'", transactionId);
+                }
+                if(!string.IsNullOrEmpty(vehicleId))
+                {
+                    query += string.Format("| where VehicleId_s == '{0}'", vehicleId);
+                }
+                query += "| order by Timestamp_t DESC";
+
+                var responseString = await Search(query, null, null);
+            */
+            
+            if(!string.IsNullOrEmpty(vehicleId))
+            {
+                return RecordFactory.GenerateTraceRecords(vehicleId, 15, 3);
+            }
+
+            return new List<TraceRecord>();
+        }
+
+        private async Task<string> Search(string query, DateTime? start = null, DateTime? end = null)
         {
             if(!start.HasValue)
             {
@@ -89,7 +127,7 @@ namespace laui
             return await ReadData(endpoint, parameter);
         }
 
-        public async Task<string> ReadData(string endpoint, string payload = "")
+        private async Task<string> ReadData(string endpoint, string payload = "")
         {
             GetAccessToken();
 
@@ -114,8 +152,7 @@ namespace laui
 
             return responseString;
         }
-
-        public void GetAccessToken()
+        private void GetAccessToken()
         {
             if(_token == null)
             {

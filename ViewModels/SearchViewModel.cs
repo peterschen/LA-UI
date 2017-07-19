@@ -12,6 +12,6 @@ namespace laui.ViewModels
         [Display(Name = "Vehicle ID")]
         public string VehicleId { get; set; }
 
-        List<Record> Records { get; set; }
+        public List<Transaction> Transactions { get; set; }
     }
 }
