@@ -1,29 +1,14 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using laui.Models;
 
 namespace laui
 {
     public class RecordFactory
     {
         private static readonly Random _random = new Random();
-
-        private class Record
-        {
-            public DateTime Timestamp { get; set; }
-        }
-
-        private class TestRecord : Record 
-        {
-        }
-
-        private class TraceRecord : Record
-        {
-            public Guid TransactionId { get; set; }
-            public string VehicleId { get; set; }
-            public string Hop { get; set; }
-        }
-
+        
         public static string GenerateTraceRecords(string vehicleId, int totalTransactions = 20, int badTransactions = 0, string[] hops = null)
         {
             int badTransactionStep = -1;
