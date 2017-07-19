@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace laui.Models
+namespace laui.ViewModels
 {
     public class SearchViewModel
     {

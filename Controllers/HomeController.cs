@@ -1,7 +1,5 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
-using laui;
-using laui.Models;
 
 namespace laui.Controllers
 {

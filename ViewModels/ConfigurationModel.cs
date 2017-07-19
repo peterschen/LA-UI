@@ -1,8 +1,8 @@
 using System;
 
-namespace laui.Models
+namespace laui.ViewModels
 {
-    public class ConfigurationModel
+    public class ConfigurationViewModel
     {
         public string TenantId { get; set; }
         public string SubscriptionId { get; set; }
@@ -16,7 +16,7 @@ namespace laui.Models
         public bool IsTested { get; set; }
         public bool IsValid { get; set; }
 
-        public ConfigurationModel()
+        public ConfigurationViewModel()
         {
             IsTested = false;
             IsValid = false;

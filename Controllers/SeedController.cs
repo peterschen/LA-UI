@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using laui;
-using laui.Models;
+using laui.ViewModels;
 
 namespace laui.Controllers
 {
@@ -21,12 +21,12 @@ namespace laui.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            var model = new SeedModel();
+            var model = new SeedViewModel();
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Seed(SeedModel model)
+        public async Task<IActionResult> Seed(SeedViewModel model)
         {
             if(!ModelState.IsValid)
             {

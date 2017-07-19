@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using laui;
-using laui.Models;
+using laui.ViewModels;
 
 namespace laui.Controllers
 {
@@ -38,9 +38,9 @@ namespace laui.Controllers
             return View("Index", model);
         }
 
-        private ConfigurationModel InitializeModel(bool isTested = false)
+        private ConfigurationViewModel InitializeModel(bool isTested = false)
         {
-            var model = new ConfigurationModel {
+            var model = new ConfigurationViewModel {
                 TenantId = _settings.TenantId,
                 SubscriptionId = _settings.SubscriptionId,
                 ApplicationId = _settings.ApplicationId, 

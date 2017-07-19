@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace laui.Models
+namespace laui.ViewModels
 {
-    public class SeedModel
+    public class SeedViewModel
     {
         [Required]
         [Display(Name = "Transactions (total)")]
@@ -18,7 +18,7 @@ namespace laui.Models
         public bool IsSeeded { get; set; }
         public bool IsSuccess { get; set; }
 
-        public SeedModel()
+        public SeedViewModel()
         {
             TotalTransactions = 20;
             BadTransactions = 0;
