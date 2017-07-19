@@ -6,13 +6,12 @@ namespace laui.ViewModels
 {
     public class SearchViewModel
     {
+        [Display(Name = "Transaction ID")]
         public string TransactionId { get; set; }
+        
+        [Display(Name = "Vehicle ID")]
         public string VehicleId { get; set; }
 
-        List<Record> records { get; set; }
-
-        public SearchViewModel()
-        {
-        }
+        List<Record> Records { get; set; }
     }
 }

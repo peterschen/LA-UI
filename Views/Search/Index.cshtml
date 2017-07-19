@@ -1,14 +1,16 @@
-﻿@{
+﻿@using laui.ViewModels;
+@model SearchViewModel
+@{
     ViewData["Title"] = "Search";
 }
 
 <div class="row">
     <div class="col-md-9">
-        <h2>Transactions by Transaction ID/h2>
+        <h2>Search</h2>
+        <p>Lipsum</p>
+        
     </div>
 </div>
-<div class="row">
-    <div class="col-md-9">
-        <h2>Transactions by Vehicle ID/h2>
-    </div>
-</div>
+@{
+    await Html.RenderPartialAsync("Form", Model);
+}
