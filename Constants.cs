@@ -6,9 +6,19 @@ namespace laui
 {
     public class Constants
     {
-        public const string LogAnalyticsSearchEndpoint = "/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.OperationalInsights/workspaces/{2}/search?api-version=2015-03-20";
+        public const string LogAnalyticsSearchEndpoint = "https://api.loganalytics.io/beta/workspaces/{0}/query?timestamp={1}";
 
-        public const string JsonContentType = "application/json";
+        public static object LogAnalyticsSearchProperties = new { 
+            Options = new {
+                deferpartialqueryfailures = true
+            }
+        };
+
+        public const string LogAnalyticsSearchQueryPrefix = "set truncationmaxrecords=10000;set truncationmaxsize=67108864";
+
+        public const string ContentTypeJson = "application/json";
+        public const string ContentTypeText = "text/plain";
+        public const string ContentTypeAll = "*/*";
 
         public const string RecordTypeTrace = "LauiTrace";
         public const string RecordTypeTest = "LauiTest";
