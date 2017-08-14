@@ -18,17 +18,23 @@ namespace laui
         private string _applicationId;
         private string _applicationKey;
         private string _subscriptionId;
+        private string _resourceGroup;
         private string _workspaceId;
+        private string _workspaceName;
 
         private string _token = null;
 
-        public LogSearcher(string tenantId, string applicationId, string applicationKey, string subscriptionId, string workspaceId)
+        public LogSearcher(
+            string tenantId, string applicationId, string applicationKey, 
+            string subscriptionId, string resourceGroup, string workspaceId, string workspaceName)
         {
             _tenantId = tenantId;
             _applicationId = applicationId;
 			_applicationKey = applicationKey;
             _subscriptionId = subscriptionId;
+            _resourceGroup = resourceGroup;
             _workspaceId = workspaceId;
+            _workspaceName = workspaceName;
         }
 
         public bool ReadTestData()
@@ -52,7 +58,7 @@ namespace laui
 
             return false;
         }
-
+        
         public async Task<bool> ReadTestDataAsync()
         {
             var result = await Search("search * | take 1");
@@ -88,28 +94,27 @@ namespace laui
 
             query = string.Format("{0};{1}", Constants.LogAnalyticsSearchQueryPrefix, query);
 
-            var endpoint = string.Format(Constants.LogAnalyticsSearchEndpoint, _workspaceId, timespan);
             var parameter = JsonConvert.SerializeObject(new
             {
                 query = query,
                 properties = Constants.LogAnalyticsSearchProperties
             });
 
-            return await ReadData(endpoint, parameter);
+            return await ReadData(parameter);
         }
 
-        public async Task<string> ReadData(string endpoint, string payload = "")
+        public async Task<string> ReadData(string payload = "")
         {
             GetAccessToken();
 
-            Uri uri = new Uri(endpoint);
+            Uri uri = new Uri(Constants.LogAnalyticsApiSearch(_subscriptionId, _resourceGroup, _workspaceName));
             StringContent content = new StringContent(payload, Encoding.UTF8, Constants.ContentTypeJson);
             string responseString = null;
 
             var handler = new HttpClientHandler {
                 UseDefaultCredentials = false,
-                Proxy = new DebugProxy("http://localhost:8888"),
-                UseProxy = true
+                // Proxy = new DebugProxy("http://localhost:8888"),
+                // UseProxy = true
             };
 
             using(var client = new HttpClient(handler))
@@ -142,11 +147,11 @@ namespace laui
         {
             if(_token == null)
             {
-                string authContextURL = "https://login.windows.net/" + _tenantId;
+                string authContextURL = string.Format("{0}/{1}", Constants.AzureAccountContext, _tenantId);
                 var authenticationContext = new AuthenticationContext(authContextURL);
                 var credential = new ClientCredential(clientId: _applicationId, clientSecret: _applicationKey);
                 
-                var task = authenticationContext.AcquireTokenAsync("https://api.loganalytics.io", credential);
+                var task = authenticationContext.AcquireTokenAsync(Constants.LogAnalyticsApiRoot, credential);
                 task.Wait();
 
                 var result = task.Result;

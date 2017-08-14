@@ -6,7 +6,15 @@ namespace laui
 {
     public class Constants
     {
-        public const string LogAnalyticsSearchEndpoint = "https://api.loganalytics.io/beta/workspaces/{0}/query?timestamp={1}";
+        public const string AzureAccountContext = "https://login.windows.net";
+
+        public const string LogAnalyticsApiRoot = "https://management.azure.com/";
+        
+        // 0 == API root e.g. https://management.azure.com
+        // 1 == subscription id
+        // 2 == resource group
+        // 3 == workspace name
+        private const string LogAnalyticsApiString = "{0}/subscriptions/{1}/resourceGroups/{2}/providers/Microsoft.OperationalInsights/workspaces/{3}/api/query?api-version=2017-01-01-preview";
 
         public static object LogAnalyticsSearchProperties = new { 
             Options = new {
@@ -38,5 +46,10 @@ namespace laui
         {
             return string.Format("{0}/{1}", ProductName, ProductVersion);
         });
+
+        public static string LogAnalyticsApiSearch(string subscriptionId, string resourceGroup, string workspaceName)
+        {
+            return string.Format(LogAnalyticsApiString, LogAnalyticsApiRoot, subscriptionId, resourceGroup, workspaceName);
+        }
     }
 }

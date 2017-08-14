@@ -14,120 +14,130 @@
         </p>
     </div>
 </div>
-<div class="row">
-    <div class="col-md-9">
-        <h3>Current Configuration</h3>
-        <div class="row">
-            <div class="col-xs-8 col-sm-3"><strong>Tenant ID:</strong></div>
-            <div class="col-xs-8 col-sm-6">@Html.Raw(Model.TenantId)</div>
-        </div>
-        <div class="row">
-            <div class="col-xs-8 col-sm-3"><strong>Subscription ID:</strong></div>
-            <div class="col-xs-8 col-sm-6">@Html.Raw(Model.SubscriptionId)</div>
-        </div>
-        <div class="row">
-            <div class="col-xs-8 col-sm-3"><strong>Application ID:</strong></div>
-            <div class="col-xs-8 col-sm-6">@Html.Raw(Model.ApplicationId)</div>
-        </div>
-        <div class="row">
-            <div class="col-xs-8 col-sm-3"><strong>Application Key:</strong></div>
-            <div class="col-xs-8 col-sm-6">@Html.Raw(Model.ApplicationKey)</div>
-        </div>
-        <div class="row">
-            <div class="col-xs-8 col-sm-3"><strong>Resource Group:</strong></div>
-            <div class="col-xs-8 col-sm-6">@Html.Raw(Model.ResourceGroup)</div>
-        </div>
-        <div class="row">
-            <div class="col-xs-8 col-sm-3"><strong>Workspace ID:</strong></div>
-            <div class="col-xs-8 col-sm-6">@Html.Raw(Model.WorkspaceId)</div>
-        </div>
-        <div class="row">
-            <div class="col-xs-8 col-sm-3"><strong>Workspace Key:</strong></div>
-            <div class="col-xs-8 col-sm-6">@Html.Raw(Model.WorkspaceKey)</div>
-        </div>
-        <div class="row">
-            <div class="col-xs-8 col-sm-3"><strong>Workspace Name:</strong></div>
-            <div class="col-xs-8 col-sm-6">@Html.Raw(Model.WorkspaceName)</div>
-        </div>
-        @if(Model.IsTested)
-        {
+@if(Model.IsConfigured)
+{
+    <div class="row">
+        <div class="col-md-9">
+            <h3>Current Configuration</h3>
+            <p>
+                The application is already configured. Please verify the parameters listed below and select <strong>Test configuration</strong>
+                to validate the settings.
+            </p>
             <div class="row">
-                <div class="col-sm-9">
-                    @if(Model.IsValid)
-                    {
-                        <div class="bs-callout bs-callout-success">
-                            <h4>Configuration test succeeded</h4>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="bs-callout bs-callout-danger">
-                            <h4>Configuration test failed</h4>
-                        </div>
-                    }
-                </div>
-            </div>   
-        }
-        else
-        {
-            <div class="row"><div class="col-sm-9">&nbsp;</div></div>   
-        }
-        <div class="row">
-            <form asp-controller="Configuration" asp-action="Test" class="form-horizontal">
-                <div class="col-sm-12"><button type="submit" class="btn btn-primary btn-block">Test configuration</button></div>
-            </form>
+                <div class="col-xs-8 col-sm-3"><strong>Tenant ID:</strong></div>
+                <div class="col-xs-8 col-sm-6">@Html.Raw(Model.TenantId)</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-8 col-sm-3"><strong>Subscription ID:</strong></div>
+                <div class="col-xs-8 col-sm-6">@Html.Raw(Model.SubscriptionId)</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-8 col-sm-3"><strong>Application ID:</strong></div>
+                <div class="col-xs-8 col-sm-6">@Html.Raw(Model.ApplicationId)</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-8 col-sm-3"><strong>Application Key:</strong></div>
+                <div class="col-xs-8 col-sm-6">@Html.Raw(Model.ApplicationKey)</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-8 col-sm-3"><strong>Resource Group:</strong></div>
+                <div class="col-xs-8 col-sm-6">@Html.Raw(Model.ResourceGroup)</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-8 col-sm-3"><strong>Workspace ID:</strong></div>
+                <div class="col-xs-8 col-sm-6">@Html.Raw(Model.WorkspaceId)</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-8 col-sm-3"><strong>Workspace Key:</strong></div>
+                <div class="col-xs-8 col-sm-6">@Html.Raw(Model.WorkspaceKey)</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-8 col-sm-3"><strong>Workspace Name:</strong></div>
+                <div class="col-xs-8 col-sm-6">@Html.Raw(Model.WorkspaceName)</div>
+            </div>
+            @if(Model.IsTested)
+            {
+                <div class="row">
+                    <div class="col-sm-9">
+                        @if(Model.IsValid)
+                        {
+                            <div class="bs-callout bs-callout-success">
+                                <h4>Configuration test succeeded</h4>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="bs-callout bs-callout-danger">
+                                <h4>Configuration test failed</h4>
+                            </div>
+                        }
+                    </div>
+                </div>   
+            }
+            else
+            {
+                <div class="row"><div class="col-sm-9">&nbsp;</div></div>   
+            }
+            <div class="row">
+                <form asp-controller="Configuration" asp-action="Test" class="form-horizontal">
+                    <div class="col-sm-12"><button type="submit" class="btn btn-primary btn-block">Test configuration</button></div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-md-9">
-        <h2>Application ID / Key</h2>
-        <p>
-            The Log Analytics Log Search API requires authentication. This is done through a Service Principal which needs to be created in Azure. Follow the steps
-            to create a Service Principal and copy the application id and key to your <code>appsettings.json</code>.
-        </p>
-        <ol>
-            <li>Login to the <a href="https://portal.azure.com/">Azure portal</a></li>
-            <li>Navigate to <strong>Azure Active Directoy</strong> (you might need to click on <strong>More Services ></strong>)</li>
-            <li>Select <strong>App registrations</strong> in the Azure Active Directory blade</li>
-            <li>Select <strong>New application registration</strong></li>
-            <li>Provide a name and URL for the application and select <strong>Web app / API</strong> for the type of application</li>
-            <li>Type the name of the application you just created into the field <strong>Search by name or AppId</strong></li>
-            <li>Select the application</li>
-            <li>Copy the <strong>Application ID</strong> to <code>appsettings.json</code></li>
-            <li>Select <strong>Keys</strong> in the Settings blade for this application</li>
-            <li>Provide a description, and a duration for the key and click <strong>Save</strong></li>
-            <li>Copy the key to <code>appsettings.json</code></li>
-        </ol>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-9">
+            <h2>Application ID / Key</h2>
+            <p>
+                The Log Analytics Log Search API requires authentication. This is done through a Service Principal which needs to be created in Azure. Follow the steps
+                to create a Service Principal and copy the application id and key to your <code>appsettings.json</code>.
+            </p>
+            <ol>
+                <li>Login to the <a href="https://portal.azure.com/">Azure portal</a></li>
+                <li>Navigate to <strong>Azure Active Directoy</strong> (you might need to click on <strong>More Services ></strong>)</li>
+                <li>Select <strong>App registrations</strong> in the Azure Active Directory blade</li>
+                <li>Select <strong>New application registration</strong></li>
+                <li>Provide a name and URL for the application and select <strong>Web app / API</strong> for the type of application</li>
+                <li>Type the name of the application you just created into the field <strong>Search by name or AppId</strong></li>
+                <li>Select the application</li>
+                <li>Copy the <strong>Application ID</strong> to <code>appsettings.json</code></li>
+                <li>Select <strong>Keys</strong> in the Settings blade for this application</li>
+                <li>Provide a description, and a duration for the key and click <strong>Save</strong></li>
+                <li>Copy the key to <code>appsettings.json</code></li>
+            </ol>
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-md-9">
-        <h2>Subscription ID</h2>
-        <p>
-            LIPSUM
-        </p>
-        <ol>
-            <li>Login to the <a href="https://portal.azure.com/">Azure portal</a></li>
-            <li>TBD</li>
-        </ol>
+    <div class="row">
+        <div class="col-md-9">
+            <h2>Subscription ID</h2>
+            <p>
+                LIPSUM
+            </p>
+            <ol>
+                <li>Login to the <a href="https://portal.azure.com/">Azure portal</a></li>
+                <li>TBD</li>
+            </ol>
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-md-9">
-        <h2>Workspace ID / Name / Key</h2>
-        <p>
-            The Log Analytics HTTP Data Collector API requires authentication. This is done by Hash-based Message Authentication Code with the workspace id and key.
-            Follow the steps to look up the values for you workspace and copy it to your <code>appsettings.json</code>.
-        </p>
-        <ol>
-            <li>Login to the <a href="https://portal.azure.com/">Azure portal</a></li>
-            <li>Navigate to <strong>Log Analytics</strong> (you might need to click on <strong>More Services ></strong>)</li>
-            <li>Select the workspace you want to use with this application</li>
-            <li>Select <strong>OMS Portal</strong> (this opens a new tab/window)</li>
-            <li>Select <strong>Settings</strong></li>
-            <li>Select <strong>Connected Sources</strong></li>
-            <li>Copy <strong>Workspace Id</strong> and <strong>Primary Key</strong> to <code>appsettings.json</code></li>
-        </ol>
+    <div class="row">
+        <div class="col-md-9">
+            <h2>Workspace ID / Name / Key</h2>
+            <p>
+                The Log Analytics HTTP Data Collector API requires authentication. This is done by Hash-based Message Authentication Code with the workspace id and key.
+                Follow the steps to look up the values for you workspace and copy it to your <code>appsettings.json</code>.
+            </p>
+            <ol>
+                <li>Login to the <a href="https://portal.azure.com/">Azure portal</a></li>
+                <li>Navigate to <strong>Log Analytics</strong> (you might need to click on <strong>More Services ></strong>)</li>
+                <li>Select the workspace you want to use with this application</li>
+                <li>Select <strong>OMS Portal</strong> (this opens a new tab/window)</li>
+                <li>Select <strong>Settings</strong></li>
+                <li>Select <strong>Connected Sources</strong></li>
+                <li>Copy <strong>Workspace Id</strong> and <strong>Primary Key</strong> to <code>appsettings.json</code></li>
+            </ol>
+        </div>
     </div>
-</div>
+}   
