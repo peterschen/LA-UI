@@ -20,17 +20,21 @@ namespace laui
         private string _applicationKey;
         private string _subscriptionId;
         private string _resourceGroup;
+        private string _workspaceId;
         private string _workspaceName;
 
         private string _token = null;
 
-        public LogSearcher(string tenantId, string applicationId, string applicationKey, string subscriptionId, string resourceGroup, string workspaceName)
+        public LogSearcher(
+            string tenantId, string applicationId, string applicationKey, 
+            string subscriptionId, string resourceGroup, string workspaceId, string workspaceName)
         {
             _tenantId = tenantId;
             _applicationId = applicationId;
 			_applicationKey = applicationKey;
             _subscriptionId = subscriptionId;
             _resourceGroup = resourceGroup;
+            _workspaceId = workspaceId;
             _workspaceName = workspaceName;
         }
 
@@ -39,7 +43,7 @@ namespace laui
             string result = null;
             try
             {
-                var task = Search("*");
+                var task = Search("search * | take 1");
                 task.Wait();
                 result = task.Result;
             }
@@ -57,8 +61,9 @@ namespace laui
         }
 
         public async Task<bool> SearchTestRecordsAsync()
+
         {
-            var result = await Search("*");
+            var result = await Search("search * | take 1");
             if(result != null)
             {
                 return true;
@@ -106,40 +111,65 @@ namespace laui
 
         private async Task<string> Search(string query, DateTime? start = null, DateTime? end = null)
         {
-            if(!start.HasValue)
+            string timespan = "PT24H";
+            if(!start.HasValue && !end.HasValue)
             {
-                start = DateTime.Now.AddDays(-1);
+                // default timespan assignment
+            }
+            else
+            {
+                if(!start.HasValue)
+                {
+                    start = DateTime.Now.AddDays(-1);
+                }
+
+                if(!end.HasValue)
+                {
+                    end = DateTime.Now;
+                }
+
+                timespan = string.Format("{0:O}/{1:O}", start.Value.ToUniversalTime(), end.Value.ToUniversalTime());
             }
 
-            if(!end.HasValue)
-            {
-                end = DateTime.Now;
-            }
+            query = string.Format("{0};{1}", Constants.LogAnalyticsSearchQueryPrefix, query);
 
-            var endpoint = string.Format(Constants.LogAnalyticsSearchEndpoint, _subscriptionId, _resourceGroup, _workspaceName);
             var parameter = JsonConvert.SerializeObject(new
             {
                 query = query,
-                start = start.Value.ToUniversalTime(),
-                end = end.Value.ToUniversalTime()
+                properties = Constants.LogAnalyticsSearchProperties
             });
 
-            return await ReadData(endpoint, parameter);
+            return await ReadData(parameter);
         }
 
-        private async Task<string> ReadData(string endpoint, string payload = "")
+        private async Task<string> ReadData(string payload = "")
+
         {
             GetAccessToken();
 
-            Uri uri = new Uri(new Uri("https://management.azure.com"), endpoint);
-            StringContent content = new StringContent(payload, Encoding.UTF8, Constants.JsonContentType);
+            Uri uri = new Uri(Constants.LogAnalyticsApiSearch(_subscriptionId, _resourceGroup, _workspaceName));
+            StringContent content = new StringContent(payload, Encoding.UTF8, Constants.ContentTypeJson);
             string responseString = null;
 
-            using(var client = new HttpClient())
+            var handler = new HttpClientHandler {
+                UseDefaultCredentials = false,
+                // Proxy = new DebugProxy("http://localhost:8888"),
+                // UseProxy = true
+            };
+
+            using(var client = new HttpClient(handler))
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
-                client.DefaultRequestHeaders.Add("User-Agent", Constants.UserAgent.Value);
-                client.DefaultRequestHeaders.Add("Accept", Constants.JsonContentType);
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(Constants.ContentTypeJson));
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(Constants.ContentTypeText));
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(Constants.ContentTypeAll));
+                client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(Constants.ProductName.Value, Constants.ProductVersion.Value));
+                // client.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue() {
+                //     NoCache = true
+                // };
+                // client.DefaultRequestHeaders.Connection.Add("keep-alive");
+                client.DefaultRequestHeaders.Add("Prefer", "ai.include-error-payload,wait=600");
+                client.DefaultRequestHeaders.Add("x-ms-user-id", _workspaceId);
 
                 using(HttpResponseMessage response = await client.PostAsync(uri, content)) 
                 {
@@ -156,11 +186,11 @@ namespace laui
         {
             if(_token == null)
             {
-                string authContextURL = "https://login.windows.net/" + _tenantId;
+                string authContextURL = string.Format("{0}/{1}", Constants.AzureAccountContext, _tenantId);
                 var authenticationContext = new AuthenticationContext(authContextURL);
                 var credential = new ClientCredential(clientId: _applicationId, clientSecret: _applicationKey);
                 
-                var task = authenticationContext.AcquireTokenAsync("https://management.azure.com/", credential);
+                var task = authenticationContext.AcquireTokenAsync(Constants.LogAnalyticsApiRoot, credential);
                 task.Wait();
 
                 var result = task.Result;

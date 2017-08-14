@@ -28,7 +28,8 @@ namespace laui.Controllers
                 _settings.ApplicationKey, 
                 _settings.SubscriptionId,
                 _settings.ResourceGroup,
-                _settings.WorkspaceName);
+                _settings.WorkspaceId,
+                _settings.WorkspaceKey);
 
             model.Transactions = searcher.SearchTransactions(model.TransactionId, model.VehicleId);
             

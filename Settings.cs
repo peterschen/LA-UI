@@ -10,7 +10,7 @@ namespace laui
         public string ApplicationKey { get; set; }
         public string ResourceGroup { get; set; }
         public string WorkspaceId { get; set; }
-        public string WorkspaceKey { get; set; }
         public string WorkspaceName { get; set; }
+        public string WorkspaceKey { get; set; }
     }
 }

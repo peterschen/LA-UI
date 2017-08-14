@@ -31,7 +31,7 @@ namespace laui.Controllers
 
             // Test Log Search API
             var searcher = new LogSearcher(_settings.TenantId, _settings.ApplicationId, _settings.ApplicationKey, 
-                _settings.SubscriptionId, _settings.ResourceGroup, _settings.WorkspaceName);
+                _settings.SubscriptionId, _settings.ResourceGroup, _settings.WorkspaceId, _settings.WorkspaceName);
             var searcherConfigurationValid = searcher.SearchTestRecords();
             
             model.IsValid = collectorConfigurationValid && searcherConfigurationValid;
@@ -48,7 +48,8 @@ namespace laui.Controllers
                 ResourceGroup = _settings.ResourceGroup,
                 WorkspaceId = _settings.WorkspaceId,
                 WorkspaceKey = _settings.WorkspaceKey,
-                WorkspaceName = _settings.WorkspaceName };
+                WorkspaceName = _settings.WorkspaceName
+            };
 
             if(isTested)
             {
