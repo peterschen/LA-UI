@@ -1,0 +1,18 @@
+﻿@using laui.ViewModels;
+@model SearchViewModel
+@{
+    ViewData["Title"] = "Trace events";
+}
+
+<div class="row">
+    <div class="col-md-9">
+        <h2>Trace events</h2>
+    </div>
+</div>
+@{
+    await Html.RenderPartialAsync("EventForm", Model);
+}
+@if(Model.Records != null && Model.Records.Count > 0)
+{
+    await Html.RenderPartialAsync("EventRecords", Model);
+}

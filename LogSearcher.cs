@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -72,41 +73,44 @@ namespace laui
             return false;
         }
 
-        public List<Transaction> SearchTransactions(string transactionId, string vehicleId)
+        public async Task<List<Transaction>> SearchTransactions(string transactionId, string vehicleId)
         {
-            var records = SearchTraceRecords(transactionId, vehicleId);
+            var records = await SearchTraceRecords(transactionId, vehicleId);
             return Transaction.Parse(records);
         }
         
-        public List<TraceRecord> SearchTraceRecords(string transactionId, string vehicleId)
+        public async Task<List<TraceRecord>> SearchTraceRecords(string transactionId, string vehicleId)
         {
-            if(string.IsNullOrEmpty(transactionId) && string.IsNullOrEmpty(vehicleId))
+            var query = "LauiTrace_CL";
+            query += "| where TimeGenerated > ago(3d)";
+            if(!string.IsNullOrEmpty(transactionId))
             {
-                return new List<TraceRecord>();
+                query += string.Format("| where TransactionId_g contains '{0}'", transactionId);
             }
-
-            /*
-                var query = "LauiTrace_CL";
-                query += "| where Timestamp_t > ago(3d)";
-                if(!string.IsNullOrEmpty(transactionId))
-                {
-                    query += string.Format("| where TransactionId_g == '{0}'", transactionId);
-                }
-                if(!string.IsNullOrEmpty(vehicleId))
-                {
-                    query += string.Format("| where VehicleId_s == '{0}'", vehicleId);
-                }
-                query += "| order by Timestamp_t DESC";
-
-                var responseString = await Search(query, null, null);
-            */
-            
             if(!string.IsNullOrEmpty(vehicleId))
             {
-                return RecordFactory.GenerateTraceRecords(vehicleId, 15, 3);
+                query += string.Format("| where VehicleId_s contain '{0}'", vehicleId);
+            }
+            query += "| project TransactionId = TransactionId_g, VehicleId = VehicleId_s, Hop = Hop_s, Timestamp = Timestamp_t";
+            query += "| order by Timestamp desc";
+
+            var responseString = await Search(query);
+            var records = new List<TraceRecord>();
+
+            if(responseString != null)
+            {
+                JObject result = JObject.Parse(responseString);
+                records = result.SelectTokens("Tables[?(@.TableName == 'Table_0')].Rows[*]")
+                    .Select(t => new TraceRecord() { 
+                        TransactionId = Guid.Parse(t.FirstOrDefault().ToString()),
+                        VehicleId = t.Skip(1).FirstOrDefault().ToString(),
+                        Hop = t.Skip(2).FirstOrDefault().ToString(),
+                        Timestamp = DateTime.Parse(t.LastOrDefault().ToString())
+                    }
+                ).ToList();
             }
 
-            return new List<TraceRecord>();
+            return records;
         }
 
         private async Task<string> Search(string query, DateTime? start = null, DateTime? end = null)
@@ -131,30 +135,28 @@ namespace laui
                 timespan = string.Format("{0:O}/{1:O}", start.Value.ToUniversalTime(), end.Value.ToUniversalTime());
             }
 
-            query = string.Format("{0};{1}", Constants.LogAnalyticsSearchQueryPrefix, query);
+            // query = string.Format("{0};{1}", Constants.LogAnalyticsSearchQueryPrefix, query);
+            // var parameter = JsonConvert.SerializeObject(new
+            // {
+            //     query = query,
+            //     properties = Constants.LogAnalyticsSearchProperties
+            // });
 
-            var parameter = JsonConvert.SerializeObject(new
-            {
-                query = query,
-                properties = Constants.LogAnalyticsSearchProperties
-            });
-
-            return await ReadData(parameter);
+            return await ReadData(query);
         }
 
-        private async Task<string> ReadData(string payload = "")
-
+        private async Task<string> ReadData(string query)
         {
             GetAccessToken();
 
-            Uri uri = new Uri(Constants.LogAnalyticsApiSearch(_subscriptionId, _resourceGroup, _workspaceName));
-            StringContent content = new StringContent(payload, Encoding.UTF8, Constants.ContentTypeJson);
+            Uri uri = new Uri(Constants.LogAnalyticsApiSearch(_subscriptionId, _resourceGroup, _workspaceName, query));
+            // StringContent content = new StringContent(payload, Encoding.UTF8, Constants.ContentTypeJson);
             string responseString = null;
 
             var handler = new HttpClientHandler {
                 UseDefaultCredentials = false,
-                // Proxy = new DebugProxy("http://localhost:8888"),
-                // UseProxy = true
+                Proxy = new DebugProxy("http://localhost:8888"),
+                UseProxy = true
             };
 
             using(var client = new HttpClient(handler))
@@ -164,14 +166,8 @@ namespace laui
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(Constants.ContentTypeText));
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(Constants.ContentTypeAll));
                 client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(Constants.ProductName.Value, Constants.ProductVersion.Value));
-                // client.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue() {
-                //     NoCache = true
-                // };
-                // client.DefaultRequestHeaders.Connection.Add("keep-alive");
-                client.DefaultRequestHeaders.Add("Prefer", "ai.include-error-payload,wait=600");
-                client.DefaultRequestHeaders.Add("x-ms-user-id", _workspaceId);
 
-                using(HttpResponseMessage response = await client.PostAsync(uri, content)) 
+                using(HttpResponseMessage response = await client.GetAsync(uri)) 
                 {
                     if(response.IsSuccessStatusCode)
                     {

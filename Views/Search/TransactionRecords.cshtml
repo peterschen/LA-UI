@@ -1,0 +1,25 @@
+@using laui.ViewModels;
+@model SearchViewModel
+
+<div class="row">
+    <div class="col-md-9">
+        <h2>Transactions</h2>
+    </div>
+</div>
+<table class="table table-striped">
+    <tr>
+        <th>Transaction ID</th>
+        <th>Vehicle ID</th>
+        <th>Events</th>
+        <th>Timestamp</th>
+    </tr>
+    @foreach(var transactions in Model.Transactions)
+    {
+        <tr>
+            <td>@transactions.TransactionId</td>
+            <td>@transactions.VehicleId</td>
+            <td>@transactions.Records.Count</td>
+            <td>@transactions.Timestamp</td>
+        </tr>
+    }
+</table>

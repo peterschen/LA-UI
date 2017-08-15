@@ -10,11 +10,12 @@ namespace laui
 
         public const string LogAnalyticsApiRoot = "https://management.azure.com/";
         
-        // 0 == API root e.g. https://management.azure.com
+        // 0 == API root e.g. https://management.azure.com/
         // 1 == subscription id
         // 2 == resource group
         // 3 == workspace name
-        private const string LogAnalyticsApiString = "{0}/subscriptions/{1}/resourceGroups/{2}/providers/Microsoft.OperationalInsights/workspaces/{3}/api/query?api-version=2017-01-01-preview";
+        private const string LogAnalyticsApiString = 
+            "{0}subscriptions/{1}/resourceGroups/{2}/providers/Microsoft.OperationalInsights/workspaces/{3}/api/query?api-version=2017-01-01-preview&query={4}";
 
         public static object LogAnalyticsSearchProperties = new { 
             Options = new {
@@ -44,12 +45,12 @@ namespace laui
 
         public static Lazy<string> UserAgent = new Lazy<string>(() =>
         {
-            return string.Format("{0}/{1}", ProductName, ProductVersion);
+            return string.Format("{0}/{1}", ProductName.Value, ProductVersion.Value);
         });
 
-        public static string LogAnalyticsApiSearch(string subscriptionId, string resourceGroup, string workspaceName)
+        public static string LogAnalyticsApiSearch(string subscriptionId, string resourceGroup, string workspaceName, string query)
         {
-            return string.Format(LogAnalyticsApiString, LogAnalyticsApiRoot, subscriptionId, resourceGroup, workspaceName);
+            return string.Format(LogAnalyticsApiString, LogAnalyticsApiRoot, subscriptionId, resourceGroup, workspaceName, query);
         }
     }
 }

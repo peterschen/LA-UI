@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using laui.ViewModels;
@@ -14,12 +15,14 @@ namespace laui.Controllers
             _settings = settings.Value;
         }
 
-        public IActionResult Index()
+        [HttpGet]
+        public IActionResult Events()
         {
             return View(new SearchViewModel());
         }
 
-        public IActionResult Search(SearchViewModel model)
+        [HttpPost]
+        public async Task<IActionResult> Events(SearchViewModel model)
         {
             // Perform search
             var searcher = new LogSearcher(
@@ -29,11 +32,33 @@ namespace laui.Controllers
                 _settings.SubscriptionId,
                 _settings.ResourceGroup,
                 _settings.WorkspaceId,
-                _settings.WorkspaceKey);
+                _settings.WorkspaceName);
 
-            model.Transactions = searcher.SearchTransactions(model.TransactionId, model.VehicleId);
-            
-            return View("Index", model);
+            model.Records = await searcher.SearchTraceRecords(model.TransactionId, model.VehicleId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult Transactions()
+        {
+            return View(new SearchViewModel());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Transactions(SearchViewModel model)
+        {
+            // Perform search
+            var searcher = new LogSearcher(
+                _settings.TenantId,
+                _settings.ApplicationId,
+                _settings.ApplicationKey, 
+                _settings.SubscriptionId,
+                _settings.ResourceGroup,
+                _settings.WorkspaceId,
+                _settings.WorkspaceName);
+
+            model.Transactions = await searcher.SearchTransactions(model.TransactionId, model.VehicleId);
+            return View(model);
         }
     }
 }

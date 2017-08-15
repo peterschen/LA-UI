@@ -13,5 +13,6 @@ namespace laui.ViewModels
         public string VehicleId { get; set; }
 
         public List<Transaction> Transactions { get; set; }
+        public List<TraceRecord> Records { get; set; }
     }
 }
