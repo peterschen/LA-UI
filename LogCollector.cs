@@ -74,7 +74,7 @@ namespace laui
 
             string url = "https://" + _workspaceId + ".ods.opinsights.azure.com/api/logs?api-version=" + ApiVersion;
             var rfcDate = DateTime.Now.ToUniversalTime().ToString("r");
-            var signature = HashSignature("POST", content.Length, "application/json", rfcDate, "/api/logs");
+            var signature = HashSignature("POST", content.Length, Constants.ContentTypeJson, rfcDate, "/api/logs");
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.ContentType = "application/json";
@@ -102,7 +102,7 @@ namespace laui
                 return true;
             }
         }
-
+        
         private string HashSignature(string method, int contentLength, string contentType, string date, string resource)
         {
             var stringtoHash = method + "\n" + contentLength + "\n" + contentType + "\nx-ms-date:" + date + "\n" + resource;
