@@ -89,7 +89,7 @@ namespace laui
             }
             if(!string.IsNullOrEmpty(vehicleId))
             {
-                query += string.Format("| where VehicleId_s contain '{0}'", vehicleId);
+                query += string.Format("| where VehicleId_s contains '{0}'", vehicleId);
             }
             query += "| project TransactionId = TransactionId_g, VehicleId = VehicleId_s, Hop = Hop_s, Timestamp = Timestamp_t";
             query += "| order by Timestamp desc";
@@ -153,13 +153,13 @@ namespace laui
             // StringContent content = new StringContent(payload, Encoding.UTF8, Constants.ContentTypeJson);
             string responseString = null;
 
-            var handler = new HttpClientHandler {
-                UseDefaultCredentials = false,
-                Proxy = new DebugProxy("http://localhost:8888"),
-                UseProxy = true
-            };
+            // var handler = new HttpClientHandler {
+            //     UseDefaultCredentials = false,
+            //     Proxy = new DebugProxy("http://localhost:8888"),
+            //     UseProxy = true
+            // };
 
-            using(var client = new HttpClient(handler))
+            using(var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(Constants.ContentTypeJson));
