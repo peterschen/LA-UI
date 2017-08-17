@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.ApplicationInsights.AspNetCore;
 
 namespace laui
 {
@@ -20,8 +21,9 @@ namespace laui
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddApplicationInsightsSettings(developerMode:env.IsDevelopment())
                 .AddEnvironmentVariables();
-
+            
             Configuration = builder.Build();
         }
 
@@ -29,6 +31,7 @@ namespace laui
         {
             services.AddOptions();
             services.Configure<Settings>(Configuration.GetSection("Settings"));
+            services.AddApplicationInsightsTelemetry(Configuration);
             services.AddMvc();
         }
 
